@@ -159,115 +159,37 @@ JWT_SECRET="your-jwt-secret"
 \`\`\`
 
 ---
-🏗️ Project Structure
+
 tactical-ops-dashboard/
-├── app/                             # Next.js App Router
-│   ├── auth/                        # Authentication pages
+│
+├── 📁 app/                          # Next.js App Router
+│   ├── 🔐 auth/                     # Authentication pages
 │   │   ├── sign-in/                 # Sign-in page
 │   │   ├── sign-up/                 # Sign-up page
 │   │   └── forgot-password/         # Password reset
-│   ├── command-center/              # Command center module
-│   ├── agent-network/               # Agent management
-│   ├── operations/                  # Operations center
-│   ├── intelligence/                # Intelligence hub
-│   ├── systems/                     # Systems monitoring
+│   │
+│   ├── 🎮 command-center/           # Command center module
+│   ├── 👥 agent-network/            # Agent management
+│   ├── 🎯 operations/               # Operations center
+│   ├── 🔍 intelligence/             # Intelligence hub
+│   ├── 🖥️ systems/                  # Systems monitoring
+│   │
 │   ├── globals.css                  # Global styles
 │   ├── layout.tsx                   # Root layout
 │   └── page.tsx                     # Main dashboard
-├── components/                      # Reusable components
+│
+├── 🧩 components/                   # Reusable components
 │   └── ui/                          # shadcn/ui components
-├── lib/                             # Utility functions
-├── public/                          # Static assets
-├── types/                           # TypeScript definitions
+│
+├── 📚 lib/                          # Utility functions
+├── 🌐 public/                       # Static assets
+├── 🔧 types/                        # TypeScript definitions
+│
 ├── .env.example                     # Environment template
 ├── next.config.js                   # Next.js configuration
 ├── tailwind.config.ts               # Tailwind configuration
 ├── tsconfig.json                    # TypeScript configuration
 └── README.md                        # Project documentation
-📁 Module Breakdown
-Authentication (app/auth/)
-
-sign-in/ - User login interface
-sign-up/ - User registration
-forgot-password/ - Password recovery
-
-Command Center (app/command-center/)
-
-Real-time agent monitoring dashboard
-Mission activity charts and analytics
-Encrypted communication channels
-System status overview
-
-Agent Network (app/agent-network/)
-
-Agent roster and database
-Status tracking and location updates
-Risk assessment tools
-Direct messaging system
-
-Operations Center (app/operations/)
-
-Mission planning interface
-Progress tracking dashboard
-Resource allocation tools
-Success analytics
-
-Intelligence Center (app/intelligence/)
-
-Classified reports management
-Threat analysis tools
-Source management (HUMINT/SIGINT/OSINT)
-Intelligence sharing platform
-
-Systems Monitor (app/systems/)
-
-Infrastructure health monitoring
-Performance metrics dashboard
-Maintenance scheduling
-Security monitoring
-
-🧩 Components Structure
-components/
-├── ui/                              # Base UI components
-│   ├── button.tsx
-│   ├── card.tsx
-│   ├── dialog.tsx
-│   ├── input.tsx
-│   └── table.tsx
-├── charts/                          # Data visualization
-│   ├── ActivityChart.tsx
-│   ├── StatusChart.tsx
-│   └── MetricsChart.tsx
-├── layout/                          # Layout components
-│   ├── Header.tsx
-│   ├── Sidebar.tsx
-│   └── Navigation.tsx
-└── shared/                          # Shared utilities
-    ├── LoadingSpinner.tsx
-    ├── ErrorBoundary.tsx
-    └── StatusIndicator.tsx
-📚 Libraries & Utilities
-lib/
-├── auth/                            # Authentication logic
-│   ├── config.ts
-│   ├── providers.ts
-│   └── middleware.ts
-├── database/                        # Database utilities
-│   ├── connection.ts
-│   ├── models.ts
-│   └── queries.ts
-├── utils/                           # Helper functions
-│   ├── cn.ts
-│   ├── formatters.ts
-│   ├── validators.ts
-│   └── constants.ts
-└── hooks/                           # Custom React hooks
-    ├── useAuth.ts
-    ├── useWebSocket.ts
-    └── useLocalStorage.ts
-🔧 Configuration Files
-FilePurposenext.config.jsNext.js configurationtailwind.config.tsTailwind CSS setuptsconfig.jsonTypeScript configuration.env.exampleEnvironment variables templatepackage.jsonDependencies and scripts
-
 ---
 
 ## 🎨 Customization
