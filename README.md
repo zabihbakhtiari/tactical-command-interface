@@ -160,34 +160,31 @@ JWT_SECRET="your-jwt-secret"
 
 ---
 
-## 🏗️ Project Structure
-
-\`\`\`
+🏗️ Project Structure
 tactical-ops-dashboard/
-├── app/                          # Next.js App Router
-│   ├── auth/                     # Authentication pages
-│   │   ├── sign-in/             # Sign-in page
-│   │   ├── sign-up/             # Sign-up page
-│   │   └── forgot-password/     # Password reset
-│   ├── command-center/          # Command center module
-│   ├── agent-network/           # Agent management
-│   ├── operations/              # Operations center
-│   ├── intelligence/            # Intelligence hub
-│   ├── systems/                 # Systems monitoring
-│   ├── globals.css              # Global styles
-│   ├── layout.tsx               # Root layout
-│   └── page.tsx                 # Main dashboard
-├── components/                   # Reusable components
-│   └── ui/                      # shadcn/ui components
-├── lib/                         # Utility functions
-├── public/                      # Static assets
-├── types/                       # TypeScript definitions
-├── .env.example                 # Environment template
-├── next.config.js               # Next.js configuration
-├── tailwind.config.ts           # Tailwind configuration
-├── tsconfig.json                # TypeScript configuration
-└── README.md                    # Project documentation
-\`\`\`
+├── 📁 app/                          # Next.js App Router
+│   ├── 🔐 auth/                     # Authentication pages
+│   │   ├── sign-in/                 # Sign-in page
+│   │   ├── sign-up/                 # Sign-up page
+│   │   └── forgot-password/         # Password reset
+│   ├── 🎮 command-center/           # Command center module
+│   ├── 👥 agent-network/            # Agent management
+│   ├── 🎯 operations/               # Operations center
+│   ├── 🔍 intelligence/             # Intelligence hub
+│   ├── 🖥️ systems/                  # Systems monitoring
+│   ├── 🎨 globals.css               # Global styles
+│   ├── 📄 layout.tsx                # Root layout
+│   └── 🏠 page.tsx                  # Main dashboard
+├── 🧩 components/                   # Reusable components
+│   └── ui/                          # shadcn/ui components
+├── 📚 lib/                          # Utility functions
+├── 🌐 public/                       # Static assets
+├── 🔧 types/                        # TypeScript definitions
+├── ⚙️ .env.example                  # Environment template
+├── 📦 next.config.js                # Next.js configuration
+├── 🎨 tailwind.config.ts            # Tailwind configuration
+├── 📋 tsconfig.json                 # TypeScript configuration
+└── 📖 README.md                     # Project documentation
 
 ---
 
