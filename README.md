@@ -379,7 +379,7 @@ This project is classified and proprietary. Unauthorized access, use, or distrib
 
 <div align="center">
 
-**Built with ❤️ by the Zabih Bakhtiari
+**Built with ❤️ by the Zabih Bakhtiari**
 
 [⬆ Back to Top](#-tactical-operations-dashboard)
 
