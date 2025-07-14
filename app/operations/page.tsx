@@ -5,11 +5,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Target, MapPin, Clock, Users, AlertTriangle, CheckCircle, XCircle } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function OperationsPage() {
   const [selectedOperation, setSelectedOperation] = useState(null)
-
-  const operations = [
+  const [operations, setOperations] = useState([
     {
       id: "OP-OMEGA-001",
       name: "SHADOW PROTOCOL",
@@ -75,7 +86,56 @@ export default function OperationsPage() {
       description: "Monitor rogue agent communications in Berlin",
       objectives: ["Assess compromise", "Extract personnel", "Damage control"],
     },
-  ]
+  ])
+
+  const [isNewOperationModalOpen, setIsNewOperationModalOpen] = useState(false)
+  const [isMissionBriefModalOpen, setIsMissionBriefModalOpen] = useState(false)
+
+  // State for New Operation form
+  const [newOperation, setNewOperation] = useState({
+    name: "",
+    status: "planning",
+    priority: "medium",
+    location: "",
+    agents: 0,
+    description: "",
+    objectives: "",
+    estimatedCompletion: "",
+  })
+
+  const handleNewOperationChange = (e) => {
+    const { id, value } = e.target
+    setNewOperation((prev) => ({ ...prev, [id]: value }))
+  }
+
+  const handleNewOperationSelectChange = (id, value) => {
+    setNewOperation((prev) => ({ ...prev, [id]: value }))
+  }
+
+  const handleCreateOperation = () => {
+    const newOpId = `OP-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+    const today = new Date().toISOString().split("T")[0] // YYYY-MM-DD
+    const newOp = {
+      id: newOpId,
+      progress: 0,
+      startDate: today,
+      ...newOperation,
+      agents: Number.parseInt(newOperation.agents, 10),
+      objectives: newOperation.objectives.split(",").map((obj) => obj.trim()),
+    }
+    setOperations((prev) => [...prev, newOp])
+    setNewOperation({
+      name: "",
+      status: "planning",
+      priority: "medium",
+      location: "",
+      agents: 0,
+      description: "",
+      objectives: "",
+      estimatedCompletion: "",
+    })
+    setIsNewOperationModalOpen(false)
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -131,8 +191,18 @@ export default function OperationsPage() {
           <p className="text-sm text-neutral-400">Mission planning and execution oversight</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">New Operation</Button>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Mission Brief</Button>
+          <Button
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+            onClick={() => setIsNewOperationModalOpen(true)}
+          >
+            New Operation
+          </Button>
+          <Button
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+            onClick={() => setIsMissionBriefModalOpen(true)}
+          >
+            Mission Brief
+          </Button>
         </div>
       </div>
 
@@ -143,7 +213,9 @@ export default function OperationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-neutral-400 tracking-wider">ACTIVE OPS</p>
-                <p className="text-2xl font-bold text-white font-mono">23</p>
+                <p className="text-2xl font-bold text-white font-mono">
+                  {operations.filter((op) => op.status === "active").length}
+                </p>
               </div>
               <Target className="w-8 h-8 text-white" />
             </div>
@@ -155,7 +227,9 @@ export default function OperationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-neutral-400 tracking-wider">COMPLETED</p>
-                <p className="text-2xl font-bold text-white font-mono">156</p>
+                <p className="text-2xl font-bold text-white font-mono">
+                  {operations.filter((op) => op.status === "completed").length}
+                </p>
               </div>
               <CheckCircle className="w-8 h-8 text-white" />
             </div>
@@ -167,7 +241,9 @@ export default function OperationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-neutral-400 tracking-wider">COMPROMISED</p>
-                <p className="text-2xl font-bold text-red-500 font-mono">2</p>
+                <p className="text-2xl font-bold text-red-500 font-mono">
+                  {operations.filter((op) => op.status === "compromised").length}
+                </p>
               </div>
               <XCircle className="w-8 h-8 text-red-500" />
             </div>
@@ -178,8 +254,8 @@ export default function OperationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">SUCCESS RATE</p>
-                <p className="text-2xl font-bold text-white font-mono">94%</p>
+                <p className="text-xs text-neutral-400 tracking-wider">TOTAL OPS</p>
+                <p className="text-2xl font-bold text-white font-mono">{operations.length}</p>
               </div>
               <AlertTriangle className="w-8 h-8 text-white" />
             </div>
@@ -354,6 +430,190 @@ export default function OperationsPage() {
           </Card>
         </div>
       )}
+
+      {/* New Operation Modal */}
+      <Dialog open={isNewOperationModalOpen} onOpenChange={setIsNewOperationModalOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-neutral-900 border-neutral-700 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white tracking-wider">Initiate New Operation</DialogTitle>
+            <DialogDescription className="text-neutral-400">
+              Fill in the details for a new tactical operation.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right text-neutral-300">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={newOperation.name}
+                onChange={handleNewOperationChange}
+                className="col-span-3 bg-neutral-800 border-neutral-700 text-white"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="status" className="text-right text-neutral-300">
+                Status
+              </Label>
+              <Select
+                value={newOperation.status}
+                onValueChange={(value) => handleNewOperationSelectChange("status", value)}
+              >
+                <SelectTrigger className="col-span-3 bg-neutral-800 border-neutral-700 text-white">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectItem value="planning">Planning</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="compromised">Compromised</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="priority" className="text-right text-neutral-300">
+                Priority
+              </Label>
+              <Select
+                value={newOperation.priority}
+                onValueChange={(value) => handleNewOperationSelectChange("priority", value)}
+              >
+                <SelectTrigger className="col-span-3 bg-neutral-800 border-neutral-700 text-white">
+                  <SelectValue placeholder="Select priority" />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-800 border-neutral-700 text-white">
+                  <SelectItem value="critical">Critical</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="location" className="text-right text-neutral-300">
+                Location
+              </Label>
+              <Input
+                id="location"
+                value={newOperation.location}
+                onChange={handleNewOperationChange}
+                className="col-span-3 bg-neutral-800 border-neutral-700 text-white"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="agents" className="text-right text-neutral-300">
+                Agents
+              </Label>
+              <Input
+                id="agents"
+                type="number"
+                value={newOperation.agents}
+                onChange={handleNewOperationChange}
+                className="col-span-3 bg-neutral-800 border-neutral-700 text-white"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="estimatedCompletion" className="text-right text-neutral-300">
+                Est. Completion
+              </Label>
+              <Input
+                id="estimatedCompletion"
+                type="date"
+                value={newOperation.estimatedCompletion}
+                onChange={handleNewOperationChange}
+                className="col-span-3 bg-neutral-800 border-neutral-700 text-white"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="description" className="text-right text-neutral-300">
+                Description
+              </Label>
+              <Textarea
+                id="description"
+                value={newOperation.description}
+                onChange={handleNewOperationChange}
+                className="col-span-3 bg-neutral-800 border-neutral-700 text-white"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="objectives" className="text-right text-neutral-300">
+                Objectives (comma-separated)
+              </Label>
+              <Textarea
+                id="objectives"
+                value={newOperation.objectives}
+                onChange={handleNewOperationChange}
+                className="col-span-3 bg-neutral-800 border-neutral-700 text-white"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={handleCreateOperation}
+              disabled={!newOperation.name || !newOperation.location || newOperation.agents <= 0}
+            >
+              Create Operation
+            </Button>
+            <Button
+              variant="outline"
+              className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
+              onClick={() => setIsNewOperationModalOpen(false)}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mission Brief Modal */}
+      <Dialog open={isMissionBriefModalOpen} onOpenChange={setIsMissionBriefModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-neutral-900 border-neutral-700 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white tracking-wider">Generate Mission Brief</DialogTitle>
+            <DialogDescription className="text-neutral-400">
+              Select parameters to generate a detailed mission brief.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Label htmlFor="briefContent" className="text-neutral-300">
+              Brief Content Preview:
+            </Label>
+            <Textarea
+              id="briefContent"
+              readOnly
+              value={`Generating a mission brief for all active operations:\n\n${operations
+                .filter((op) => op.status === "active")
+                .map((op) => `- ${op.name} (${op.id}) in ${op.location}`)
+                .join("\n")}`}
+              className="bg-neutral-800 border-neutral-700 text-white h-48"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={() => {
+                alert("Mission Brief Generated! (Check console for details)")
+                console.log(
+                  "Generated Mission Brief:",
+                  operations.filter((op) => op.status === "active"),
+                )
+                setIsMissionBriefModalOpen(false)
+              }}
+            >
+              Generate Brief
+            </Button>
+            <Button
+              variant="outline"
+              className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
+              onClick={() => setIsMissionBriefModalOpen(false)}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,11 +17,20 @@ import {
   CheckCircle,
   Settings,
 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function SystemsPage() {
   const [selectedSystem, setSelectedSystem] = useState(null)
-
-  const systems = [
+  const [systems, setSystems] = useState([
     {
       id: "SYS-001",
       name: "COMMAND SERVER ALPHA",
@@ -100,7 +109,50 @@ export default function SystemsPage() {
       location: "Data Center 1",
       lastMaintenance: "2025-05-10",
     },
-  ]
+  ])
+
+  const [isScanModalOpen, setIsScanModalOpen] = useState(false)
+  const [isMaintenanceModalOpen, setIsMaintenanceModalOpen] = useState(false)
+  const [scanProgress, setScanProgress] = useState(0)
+  const [isScanning, setIsScanning] = useState(false)
+  const [maintenanceSystemId, setMaintenanceSystemId] = useState("")
+
+  useEffect(() => {
+    let interval
+    if (isScanning) {
+      setScanProgress(0)
+      interval = setInterval(() => {
+        setScanProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval)
+            setIsScanning(false)
+            return 100
+          }
+          return prev + 10
+        })
+      }, 200)
+    }
+    return () => clearInterval(interval)
+  }, [isScanning])
+
+  const handleStartScan = () => {
+    setIsScanning(true)
+  }
+
+  const handleMaintenanceMode = () => {
+    if (maintenanceSystemId) {
+      setSystems((prevSystems) =>
+        prevSystems.map((sys) =>
+          sys.id === maintenanceSystemId ? { ...sys, status: "maintenance", uptime: "0 days" } : sys,
+        ),
+      )
+      alert(`System ${maintenanceSystemId} put into maintenance mode.`)
+      setMaintenanceSystemId("")
+      setIsMaintenanceModalOpen(false)
+    } else {
+      alert("Please select a system ID.")
+    }
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -167,8 +219,15 @@ export default function SystemsPage() {
           <p className="text-sm text-neutral-400">Infrastructure health and performance monitoring</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">System Scan</Button>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Maintenance Mode</Button>
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setIsScanModalOpen(true)}>
+            System Scan
+          </Button>
+          <Button
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+            onClick={() => setIsMaintenanceModalOpen(true)}
+          >
+            Maintenance Mode
+          </Button>
         </div>
       </div>
 
@@ -179,7 +238,9 @@ export default function SystemsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-neutral-400 tracking-wider">SYSTEMS ONLINE</p>
-                <p className="text-2xl font-bold text-white font-mono">24/26</p>
+                <p className="text-2xl font-bold text-white font-mono">
+                  {systems.filter((sys) => sys.status === "online").length}/{systems.length}
+                </p>
               </div>
               <CheckCircle className="w-8 h-8 text-white" />
             </div>
@@ -191,7 +252,9 @@ export default function SystemsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-neutral-400 tracking-wider">WARNINGS</p>
-                <p className="text-2xl font-bold text-orange-500 font-mono">3</p>
+                <p className="text-2xl font-bold text-orange-500 font-mono">
+                  {systems.filter((sys) => sys.status === "warning").length}
+                </p>
               </div>
               <AlertTriangle className="w-8 h-8 text-orange-500" />
             </div>
@@ -215,7 +278,9 @@ export default function SystemsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-neutral-400 tracking-wider">MAINTENANCE</p>
-                <p className="text-2xl font-bold text-neutral-300 font-mono">1</p>
+                <p className="text-2xl font-bold text-neutral-300 font-mono">
+                  {systems.filter((sys) => sys.status === "maintenance").length}
+                </p>
               </div>
               <Settings className="w-8 h-8 text-neutral-300" />
             </div>
@@ -427,6 +492,102 @@ export default function SystemsPage() {
           </Card>
         </div>
       )}
+
+      {/* System Scan Modal */}
+      <Dialog open={isScanModalOpen} onOpenChange={setIsScanModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-neutral-900 border-neutral-700 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white tracking-wider">Initiate System Scan</DialogTitle>
+            <DialogDescription className="text-neutral-400">
+              Confirm to begin a comprehensive scan of all active systems.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {isScanning ? (
+              <div className="text-center space-y-4">
+                <p className="text-neutral-300">Scanning systems...</p>
+                <Progress value={scanProgress} className="h-3 bg-neutral-800" />
+                <p className="text-sm text-neutral-400">{scanProgress}% Complete</p>
+                {scanProgress === 100 && (
+                  <p className="text-white font-bold">Scan Complete! No critical threats detected.</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-neutral-300">Click "Start Scan" to begin the diagnostic process.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={handleStartScan}
+              disabled={isScanning}
+            >
+              {isScanning ? "Scanning..." : "Start Scan"}
+            </Button>
+            <Button
+              variant="outline"
+              className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
+              onClick={() => {
+                setIsScanModalOpen(false)
+                setIsScanning(false)
+                setScanProgress(0)
+              }}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Maintenance Mode Modal */}
+      <Dialog open={isMaintenanceModalOpen} onOpenChange={setIsMaintenanceModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-neutral-900 border-neutral-700 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white tracking-wider">Activate Maintenance Mode</DialogTitle>
+            <DialogDescription className="text-neutral-400">
+              Select a system to put into maintenance mode. This will temporarily take it offline.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="systemId" className="text-right text-neutral-300">
+                System ID
+              </Label>
+              <Select value={maintenanceSystemId} onValueChange={setMaintenanceSystemId}>
+                <SelectTrigger className="col-span-3 bg-neutral-800 border-neutral-700 text-white">
+                  <SelectValue placeholder="Select system ID" />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-800 border-neutral-700 text-white">
+                  {systems.map((sys) => (
+                    <SelectItem key={sys.id} value={sys.id}>
+                      {sys.id} - {sys.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={handleMaintenanceMode}
+              disabled={!maintenanceSystemId}
+            >
+              Activate Mode
+            </Button>
+            <Button
+              variant="outline"
+              className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
+              onClick={() => {
+                setIsMaintenanceModalOpen(false)
+                setMaintenanceSystemId("")
+              }}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

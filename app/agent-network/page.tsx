@@ -5,14 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Filter, MoreHorizontal, MapPin, Clock, Shield } from "lucide-react"
-import AgentFormModal from "@/components/agent-form-modal"
 
 export default function AgentNetworkPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedAgent, setSelectedAgent] = useState(null)
-  const [isAddingAgent, setIsAddingAgent] = useState(false)
-  const [editingAgent, setEditingAgent] = useState(null)
-  const [agents, setAgents] = useState([
+
+  const agents = [
     {
       id: "G-078W",
       name: "VENGEFUL SPIRIT",
@@ -85,28 +83,7 @@ export default function AgentNetworkPage() {
       missions: 38,
       risk: "medium",
     },
-  ])
-
-  const handleAddAgent = (newAgent) => {
-    const agent = {
-      ...newAgent,
-      id: `G-${String(Date.now()).slice(-3)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
-      missions: 0,
-      lastSeen: "Just now",
-    }
-    setAgents([...agents, agent])
-    setIsAddingAgent(false)
-  }
-
-  const handleEditAgent = (updatedAgent) => {
-    setAgents(agents.map((agent) => (agent.id === updatedAgent.id ? updatedAgent : agent)))
-    setEditingAgent(null)
-  }
-
-  const handleDeleteAgent = (agentId) => {
-    setAgents(agents.filter((agent) => agent.id !== agentId))
-    setSelectedAgent(null)
-  }
+  ]
 
   const filteredAgents = agents.filter(
     (agent) =>
@@ -123,9 +100,7 @@ export default function AgentNetworkPage() {
           <p className="text-sm text-neutral-400">Manage and monitor field operatives</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setIsAddingAgent(true)}>
-            Deploy Agent
-          </Button>
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Deploy Agent</Button>
           <Button className="bg-orange-500 hover:bg-orange-600 text-white">
             <Filter className="w-4 h-4 mr-2" />
             Filter
@@ -338,39 +313,21 @@ export default function AgentNetworkPage() {
               <div className="flex gap-2 pt-4">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white">Assign Mission</Button>
                 <Button
-                  onClick={() => {
-                    setEditingAgent(selectedAgent)
-                    setSelectedAgent(null)
-                  }}
                   variant="outline"
                   className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
                 >
-                  Edit Agent
+                  View History
                 </Button>
                 <Button
-                  onClick={() => handleDeleteAgent(selectedAgent.id)}
                   variant="outline"
-                  className="border-red-700 text-red-400 hover:bg-red-800 hover:text-red-300 bg-transparent"
+                  className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
                 >
-                  Delete Agent
+                  Send Message
                 </Button>
               </div>
             </CardContent>
           </Card>
         </div>
-      )}
-
-      {/* Add/Edit Agent Modal */}
-      {(isAddingAgent || editingAgent) && (
-        <AgentFormModal
-          agent={editingAgent}
-          isOpen={isAddingAgent || !!editingAgent}
-          onClose={() => {
-            setIsAddingAgent(false)
-            setEditingAgent(null)
-          }}
-          onSave={editingAgent ? handleEditAgent : handleAddAgent}
-        />
       )}
     </div>
   )
