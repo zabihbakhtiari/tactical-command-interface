@@ -11,7 +11,7 @@
 
 [Live Demo](https://tactical-command-interface.vercel.app) • [Features](#features) • [Installation](#installation)
 
-![Dashboard Preview](/public/Screenshot%202025-07-13%20142048.png)
+![Dashboard Preview](https://via.placeholder.com/800x400/171717/f97316?text=Tactical+Command+Interface)
 
 </div>
 
